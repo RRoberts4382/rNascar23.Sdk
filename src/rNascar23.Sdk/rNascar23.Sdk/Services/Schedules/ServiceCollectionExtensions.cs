@@ -4,7 +4,7 @@ using rNascar23.Sdk.Service.Schedules.Adapters;
 
 namespace rNascar23.Sdk.Service.Schedules
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddSchedules(this IServiceCollection services)
         {

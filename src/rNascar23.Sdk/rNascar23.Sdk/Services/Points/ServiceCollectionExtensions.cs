@@ -4,7 +4,7 @@ using rNascar23.Sdk.Service.Points.Adapters;
 
 namespace rNascar23.Sdk.Service.Points
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddPoints(this IServiceCollection services)
         {
