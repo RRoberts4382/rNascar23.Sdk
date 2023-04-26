@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using rNascar23.Sdk.Data;
-using rNascar23.Sdk.Data.LiveFeeds.Ports;
+using rNascar23.Sdk.LiveFeeds.Ports;
 using rNascar23.Sdk.LiveFeeds.Models;
 using rNascar23.Sdk.Service.LiveFeeds.Data.Models;
 using System;

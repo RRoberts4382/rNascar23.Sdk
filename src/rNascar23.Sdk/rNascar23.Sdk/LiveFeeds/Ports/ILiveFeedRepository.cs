@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace rNascar23.Sdk.Data.LiveFeeds.Ports
+namespace rNascar23.Sdk.LiveFeeds.Ports
 {
     public interface ILiveFeedRepository
     {
