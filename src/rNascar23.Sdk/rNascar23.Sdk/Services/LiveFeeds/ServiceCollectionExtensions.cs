@@ -5,7 +5,7 @@ using rNascar23.Sdk.Service.LiveFeeds.Adapters;
 
 namespace rNascar23.Sdk.Service.LiveFeeds
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddLiveFeed(this IServiceCollection services)
         {

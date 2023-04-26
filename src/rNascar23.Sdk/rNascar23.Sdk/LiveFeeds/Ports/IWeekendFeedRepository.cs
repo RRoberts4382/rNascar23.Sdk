@@ -7,6 +7,10 @@ namespace rNascar23.Sdk.LiveFeeds.Ports
 {
     public interface IWeekendFeedRepository
     {
-        Task<WeekendFeed> GetWeekendFeedAsync(SeriesTypes seriesId, int raceId, int? year = null, CancellationToken cancellationToken = default);
+        Task<WeekendFeed> GetWeekendFeedAsync(
+            SeriesTypes seriesId, 
+            int raceId, 
+            int? year = null, 
+            CancellationToken cancellationToken = default);
     }
 }

@@ -4,7 +4,7 @@ using rNascar23.Sdk.Service.PitStops.Adapters;
 
 namespace rNascar23.Sdk.Service.PitStops
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddPitStops(this IServiceCollection services)
         {

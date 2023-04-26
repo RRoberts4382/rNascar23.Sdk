@@ -4,7 +4,7 @@ using rNascar23.Sdk.Service.Flags.Adapters;
 
 namespace rNascar23.Sdk.Service.Flags
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddFlagState(this IServiceCollection services)
         {

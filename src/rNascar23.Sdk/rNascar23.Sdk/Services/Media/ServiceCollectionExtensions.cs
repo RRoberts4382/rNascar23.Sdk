@@ -3,7 +3,7 @@ using rNascar23.Sdk.Media.Ports;
 
 namespace rNascar23.Sdk.Service.Media
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddMedia(this IServiceCollection services)
         {

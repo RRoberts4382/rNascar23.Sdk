@@ -4,7 +4,7 @@ using rNascar23.Sdk.Service.LapTimes.Adapters;
 
 namespace rNascar23.Sdk.Service.LapTimes
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddLapTimes(this IServiceCollection services)
         {

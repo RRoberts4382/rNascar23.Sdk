@@ -10,7 +10,6 @@ namespace rNascar23.Sdk.Service.Flags.Mappings
         {
             CreateMap<LapAveragesModel, LapAverages>();
 
-
             CreateMap<FlagModel, LapFlag>()
                 .ForMember(m => m.LapsCompleted, opts => opts.MapFrom(src => src.LapsCompleted))
                 .ForMember(m => m.FlagState, opts => opts.MapFrom(src => src.FlagState));

@@ -1,9 +1,10 @@
-﻿namespace rNasar23Multi.Sdk.Data
+﻿using System.Threading.Tasks;
+
+namespace rNasar23Multi.Sdk.Data
 {
     public interface IJsonDataRepository
     {
-        string Url { get; }
-
         string Get(string url);
+        Task<string> GetAsync(string url);
     }
 }

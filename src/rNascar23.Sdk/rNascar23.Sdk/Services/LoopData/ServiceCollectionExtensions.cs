@@ -5,7 +5,7 @@ using rNascar23.Sdk.Service.Schedules;
 
 namespace rNascar23.Sdk.Service.LoopData
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddLoopData(this IServiceCollection services)
         {
