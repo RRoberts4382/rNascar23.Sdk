@@ -274,11 +274,9 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
             File.WriteAllText(fileName, json);
         }
 
-        protected virtual string BuildDataFilePath()
+        private string BuildDataFilePath()
         {
-            var settings = UserSettingsService.LoadUserSettings();
-
-            return Path.Combine(settings.DataDirectory, DataFileName);
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"\\Data\\{DataFileName}");
         }
 
         #endregion
