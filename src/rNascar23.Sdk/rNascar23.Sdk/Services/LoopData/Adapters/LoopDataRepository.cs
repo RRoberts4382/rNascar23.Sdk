@@ -6,6 +6,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.LoopData.Models;
 using rNascar23.Sdk.LoopData.Ports;
 using rNascar23.Sdk.Service.LoopData.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Linq;
 using System.Threading;
@@ -18,22 +20,20 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
-        #region properties
+        #region ctor
 
-        // https://cf.nascar.com/loopstats/prod/2023/2/5314.json
-        protected virtual string Url { get => @"https://cf.nascar.com/loopstats/prod/{0}/{1}/{2}.json"; }
-
-        #endregion
-
-        #region fields
-
-        public LoopDataRepository(IMapper mapper, ILogger<LoopDataRepository> logger)
+        public LoopDataRepository(
+            IMapper mapper,
+            ILogger<LoopDataRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -41,16 +41,20 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
         #region public
 
         public virtual async Task<EventLoopData> GetLoopDataAsync(
-            SeriesTypes seriesId, 
-            int raceId, 
-            int? year = null, 
+            SeriesTypes seriesId,
+            int raceId,
+            int? year = null,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId, year);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LoopData,
+                    (int)seriesId,
+                    raceId,
+                    year);
 
-                var json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -70,15 +74,6 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
             }
 
             return new EventLoopData();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId, int? year = null)
-        {
-            return String.Format(Url, year.GetValueOrDefault(DateTime.Now.Year), (int)seriesId, raceId);
         }
 
         #endregion

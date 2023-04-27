@@ -276,7 +276,7 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
 
         private string BuildDataFilePath()
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"\\Data\\{DataFileName}");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"\\rNascar23\\Data\\{DataFileName}");
         }
 
         #endregion

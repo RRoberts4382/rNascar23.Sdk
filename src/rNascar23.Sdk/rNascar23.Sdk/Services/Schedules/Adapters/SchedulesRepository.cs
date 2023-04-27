@@ -4,6 +4,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.Schedules.Models;
 using rNascar23.Sdk.Schedules.Ports;
 using rNascar23.Sdk.Service.Schedules.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,23 +17,22 @@ namespace rNascar23.Sdk.Service.Schedules.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
         protected ScheduleCache _cache;
         protected readonly TimeSpan _cacheDuration = new TimeSpan(0, 15, 0);
 
         #endregion
 
-        #region properties
-
-        protected virtual string Url { get => @"https://cf.nascar.com/cacher/{0}/race_list_basic.json"; }
-
-        #endregion
-
         #region ctor
 
-        public SchedulesRepository(IMapper mapper, ILogger<SchedulesRepository> logger)
+        public SchedulesRepository(
+            IMapper mapper,
+            ILogger<SchedulesRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -50,9 +51,11 @@ namespace rNascar23.Sdk.Service.Schedules.Adapters
                         return _cache.SeriesSchedules;
                 }
 
-                var absoluteUrl = BuildUrl(year);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.Schedules,
+                    year);
 
-                var json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -86,15 +89,6 @@ namespace rNascar23.Sdk.Service.Schedules.Adapters
             }
 
             return new SeriesSchedules();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual string BuildUrl(int? year = null)
-        {
-            return String.Format(Url, year.GetValueOrDefault(DateTime.Now.Year));
         }
 
         #endregion

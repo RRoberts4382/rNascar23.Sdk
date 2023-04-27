@@ -6,6 +6,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.LapTimes.Models;
 using rNascar23.Sdk.LapTimes.Ports;
 using rNascar23.Sdk.Service.LapTimes.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,7 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
         private int _errorCount = 0;
 
         #endregion
@@ -39,17 +42,18 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
             }
         }
 
-        // https://cf.nascar.com/cacher/2023/2/5314/lap-times.json
-        protected virtual string Url { get => @"https://cf.nascar.com/cacher/{0}/{1}/{2}/lap-averages.json"; }
-
         #endregion
 
         #region ctor
 
-        public LapAveragesRepository(IMapper mapper, ILogger<LapAveragesRepository> logger)
+        public LapAveragesRepository(
+            IMapper mapper, 
+            ILogger<LapAveragesRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -70,9 +74,13 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
             {
                 if (!CircuitBreakerTripped)
                 {
-                    var absoluteUrl = BuildUrl(seriesId, raceId, year);
+                    var url = _apiSourcesRepository.GetApiUrl(
+                        ApiSourceType.LapAverages, 
+                        (int)seriesId, 
+                        raceId, 
+                        year);
 
-                    json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                    json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                     if (String.IsNullOrEmpty(json))
                     {
@@ -115,11 +123,6 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
         #endregion
 
         #region protected
-        
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId, int? year = null)
-        {
-            return String.Format(Url, year.GetValueOrDefault(DateTime.Now.Year), (int)seriesId, raceId);
-        }
 
         protected virtual void ExceptionHandler(Exception ex, string message, string json)
         {

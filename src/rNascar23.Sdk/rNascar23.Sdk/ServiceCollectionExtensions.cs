@@ -7,6 +7,7 @@ using rNascar23.Sdk.Service.Media;
 using rNascar23.Sdk.Service.PitStops;
 using rNascar23.Sdk.Service.Points;
 using rNascar23.Sdk.Service.Schedules;
+using rNascar23.Sdk.Service.Sources;
 using System;
 
 namespace rNascar23.Sdk
@@ -17,6 +18,7 @@ namespace rNascar23.Sdk
         {
             services
                 .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies())
+                .AddSources()
                 .AddFlagState()
                 .AddSchedules()
                 .AddLiveFeed()

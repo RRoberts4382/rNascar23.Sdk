@@ -6,6 +6,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.LiveFeeds.Models;
 using rNascar23.Sdk.LiveFeeds.Ports;
 using rNascar23.Sdk.Service.LiveFeeds.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,22 +19,20 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         #region fields
 
         private readonly IMapper _mapper;
-
-        #endregion
-
-        #region properties
-
-        // https://cf.nascar.com/cacher/2023/1/5274/weekend-feed.json
-        protected virtual string Url { get => @"https://cf.nascar.com/cacher/{0}/{1}/{2}/weekend-feed.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public WeekendFeedRepository(IMapper mapper, ILogger<WeekendFeedRepository> logger)
+        public WeekendFeedRepository(
+            IMapper mapper, 
+            ILogger<WeekendFeedRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -47,9 +47,13 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         {
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId, year);
+                var url = _apiSourcesRepository.GetApiUrl(
+                   ApiSourceType.WeekendFeed,
+                   (int)seriesId,
+                   raceId,
+                   year);
 
-                var json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -64,15 +68,6 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
             }
 
             return new WeekendFeed();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId, int? year = null)
-        {
-            return String.Format(Url, year.GetValueOrDefault(DateTime.Now.Year), (int)seriesId, raceId);
         }
 
         #endregion

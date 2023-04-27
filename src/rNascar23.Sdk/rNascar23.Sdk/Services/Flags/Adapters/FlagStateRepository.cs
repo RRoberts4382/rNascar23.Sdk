@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
+using rNascar23.Sdk.Common;
 using rNascar23.Sdk.Data;
 using rNascar23.Sdk.Flags.Models;
 using rNascar23.Sdk.Flags.Ports;
 using rNascar23.Sdk.Service.Flags.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,21 +20,20 @@ namespace rNascar23.Sdk.Service.Flags.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
-
-        #endregion
-
-        #region properties
-
-        protected virtual string Url { get => @"https://cf.nascar.com/live/feeds/live-flag-data.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public FlagStateRepository(IMapper mapper, ILogger<FlagStateRepository> logger)
+        public FlagStateRepository(
+            IMapper mapper,
+            ILogger<FlagStateRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -45,7 +47,9 @@ namespace rNascar23.Sdk.Service.Flags.Adapters
         {
             try
             {
-                var json = await GetAsync(Url, cancellationToken).ConfigureAwait(false);
+                var url = _apiSourcesRepository.GetApiUrl(ApiSourceType.FlagState);
+
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {

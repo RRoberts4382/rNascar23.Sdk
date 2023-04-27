@@ -8,6 +8,7 @@ This sdk targets netstandard2.0 ,net6.0, and net6.0-maccatalyst.
 - Newtonsoft.Json Version 13.0.3
 - AutoMapper.Extensions.Microsoft.DependencyInjection Version 8.0.1
 - Microsoft.Extensions.DependencyInjection.Abstractions Version 7.0.0
+- Microsoft.Extensions.Logging.Abstractions Version 7.0.0
 - RestSharp Version 109.0.1
 
 

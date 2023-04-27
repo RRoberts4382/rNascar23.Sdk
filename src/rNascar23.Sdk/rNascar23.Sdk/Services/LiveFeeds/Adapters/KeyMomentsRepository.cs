@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using rNascar23.Sdk.Common;
 using rNascar23.Sdk.Data;
 using rNascar23.Sdk.LiveFeeds.Models;
 using rNascar23.Sdk.LiveFeeds.Ports;
 using rNascar23.Sdk.Service.LiveFeeds.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +18,20 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
 {
     internal class KeyMomentsRepository : JsonDataRepository, IKeyMomentsRepository
     {
-        #region properties
+        #region fields
 
-        // https://cf.nascar.com/cacher/2023/2/5314/lap-notes.json
-        protected virtual string Url { get => @"https://cf.nascar.com/cacher/{0}/{1}/{2}/lap-notes.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public KeyMomentsRepository(ILogger<KeyMomentsRepository> logger)
+        public KeyMomentsRepository(
+            ILogger<KeyMomentsRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -43,9 +48,13 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         {
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId, year);
+                var url = _apiSourcesRepository.GetApiUrl(
+                   ApiSourceType.KeyMoments,
+                   (int)seriesId,
+                   raceId,
+                   year);
 
-                var json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -87,15 +96,6 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
             }
 
             return new List<KeyMoment>();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId, int? year = null)
-        {
-            return String.Format(Url, year.GetValueOrDefault(DateTime.Now.Year), (int)seriesId, raceId);
         }
 
         #endregion
