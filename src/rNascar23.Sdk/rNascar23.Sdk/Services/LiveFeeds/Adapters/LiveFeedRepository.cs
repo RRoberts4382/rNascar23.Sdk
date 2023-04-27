@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using rNascar23.Sdk.Data;
-using rNascar23.Sdk.LiveFeeds.Ports;
 using rNascar23.Sdk.LiveFeeds.Models;
+using rNascar23.Sdk.LiveFeeds.Ports;
 using rNascar23.Sdk.Service.LiveFeeds.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,21 +17,20 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
-
-        #endregion
-
-        #region properties
-
-        protected virtual string Url { get => @"https://cf.nascar.com/live/feeds/live-feed.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public LiveFeedRepository(IMapper mapper, ILogger<LiveFeedRepository> logger)
+        public LiveFeedRepository(
+            IMapper mapper,
+            ILogger<LiveFeedRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -41,7 +41,9 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         {
             try
             {
-                var json = await GetAsync(Url, cancellationToken).ConfigureAwait(false);
+                var url = _apiSourcesRepository.GetApiUrl(ApiSourceType.LiveFeed);
+
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {

@@ -6,6 +6,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.LapTimes.Models;
 using rNascar23.Sdk.LapTimes.Ports;
 using rNascar23.Sdk.Service.LapTimes.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Linq;
 using System.Threading;
@@ -18,22 +20,20 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
-
-        #endregion
-
-        #region properties
-
-        // https://cf.nascar.com/cacher/2023/2/5314/lap-times.json
-        protected virtual string Url { get => @"https://cf.nascar.com/cacher/{0}/{1}/{2}/lap-times.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public LapTimesRepository(IMapper mapper, ILogger<LapTimesRepository> logger)
+        public LapTimesRepository(
+            IMapper mapper,
+            ILogger<LapTimesRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -41,7 +41,7 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
         #region public
 
         public virtual async Task<LapTimeData> GetLapTimeDataAsync(
-            SeriesTypes seriesId, 
+            SeriesTypes seriesId,
             int raceId,
             int? year = null,
             CancellationToken cancellationToken = default)
@@ -50,9 +50,13 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
 
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId, year);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LapTimes,
+                    (int)seriesId,
+                    raceId,
+                    year);
 
-                json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -86,9 +90,13 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
 
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId, year);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LapTimes,
+                    (int)seriesId,
+                    raceId,
+                    year);
 
-                json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -112,15 +120,6 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
             }
 
             return new LapTimeData();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId, int? year = null)
-        {
-            return String.Format(Url, year.GetValueOrDefault(DateTime.Now.Year), (int)seriesId, raceId);
         }
 
         #endregion

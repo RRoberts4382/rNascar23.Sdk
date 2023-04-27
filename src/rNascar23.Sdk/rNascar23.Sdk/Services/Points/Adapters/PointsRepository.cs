@@ -6,6 +6,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.Points.Models;
 using rNascar23.Sdk.Points.Ports;
 using rNascar23.Sdk.Service.Points.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,21 +21,20 @@ namespace rNascar23.Sdk.Service.Points.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
-
-        #endregion
-
-        #region properties
-
-        protected virtual string Url { get => @"https://cf.nascar.com/live/feeds/series_{0}/{1}/live_points.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public PointsRepository(IMapper mapper, ILogger<PointsRepository> logger)
+        public PointsRepository(
+            IMapper mapper,
+            ILogger<PointsRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
             : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -49,9 +50,12 @@ namespace rNascar23.Sdk.Service.Points.Adapters
         {
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LoopData,
+                    (int)seriesId,
+                    raceId);
 
-                var json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -59,7 +63,7 @@ namespace rNascar23.Sdk.Service.Points.Adapters
 
                     if (model != null)
                     {
-                        var points =  _mapper.Map<IList<DriverPoints>>(model);
+                        var points = _mapper.Map<IList<DriverPoints>>(model);
 
                         var enumerable = points as IEnumerable<DriverPoints>;
 
@@ -90,9 +94,12 @@ namespace rNascar23.Sdk.Service.Points.Adapters
         {
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LoopData,
+                    (int)seriesId,
+                    raceId);
 
-                var json = await GetAsync(absoluteUrl).ConfigureAwait(false);
+                var json = await GetAsync(url).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -100,7 +107,7 @@ namespace rNascar23.Sdk.Service.Points.Adapters
 
                     if (models != null)
                     {
-                        var points =  _mapper.Map<IList<StagePointsDetails>>(models);
+                        var points = _mapper.Map<IList<StagePointsDetails>>(models);
 
                         var enumerable = points as IEnumerable<StagePointsDetails>;
 
@@ -120,15 +127,6 @@ namespace rNascar23.Sdk.Service.Points.Adapters
             }
 
             return new List<StagePointsDetails>();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId)
-        {
-            return String.Format(Url, (int)seriesId, raceId);
         }
 
         #endregion

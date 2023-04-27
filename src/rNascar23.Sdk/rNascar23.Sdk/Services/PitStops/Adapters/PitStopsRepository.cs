@@ -6,6 +6,8 @@ using rNascar23.Sdk.Data;
 using rNascar23.Sdk.PitStops.Models;
 using rNascar23.Sdk.PitStops.Ports;
 using rNascar23.Sdk.Service.PitStops.Data.Models;
+using rNascar23.Sdk.Sources.Models;
+using rNascar23.Sdk.Sources.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,22 +21,20 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
         #region fields
 
         protected readonly IMapper _mapper;
-
-        #endregion
-
-        #region properties
-
-        // https://cf.nascar.com/cacher/live/series_2/5314/live-pit-data.json
-        protected virtual string Url { get => @"https://cf.nascar.com/cacher/live/series_{0}/{1}/live-pit-data.json"; }
+        protected readonly IApiSourcesRepository _apiSourcesRepository;
 
         #endregion
 
         #region ctor
 
-        public PitStopsRepository(IMapper mapper, ILogger<PitStopsRepository> logger)
-          : base(logger)
+        public PitStopsRepository(
+            IMapper mapper,
+            ILogger<PitStopsRepository> logger,
+            IApiSourcesRepository apiSourcesRepository)
+            : base(logger)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
         }
 
         #endregion
@@ -54,9 +54,12 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
 
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LoopData,
+                    (int)seriesId,
+                    raceId);
 
-                json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -102,9 +105,12 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
 
             try
             {
-                var absoluteUrl = BuildUrl(seriesId, raceId);
+                var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.LoopData,
+                    (int)seriesId,
+                    raceId);
 
-                json = await GetAsync(absoluteUrl, cancellationToken).ConfigureAwait(false);
+                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -144,11 +150,6 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
         #endregion
 
         #region private
-
-        protected virtual string BuildUrl(SeriesTypes seriesId, int raceId)
-        {
-            return String.Format(Url, (int)seriesId, raceId);
-        }
 
         protected virtual void ExceptionHandler(Exception ex, string message, string json)
         {
