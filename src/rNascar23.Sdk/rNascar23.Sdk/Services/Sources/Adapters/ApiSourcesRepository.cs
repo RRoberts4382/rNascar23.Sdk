@@ -97,9 +97,9 @@ namespace rNascar23.Sdk.Services.Sources.Adapters
 
         public virtual string GetApiUrl(
             ApiSourceType sourceType,
-            int? season = null,
             int? seriesId = null,
-            int? raceId = null)
+            int? raceId = null,
+            int? season = null)
         {
             try
             {

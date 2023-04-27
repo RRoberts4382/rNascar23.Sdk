@@ -55,7 +55,7 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
             try
             {
                 var url = _apiSourcesRepository.GetApiUrl(
-                    ApiSourceType.LoopData,
+                    ApiSourceType.PitStops,
                     (int)seriesId,
                     raceId);
 
