@@ -10,9 +10,9 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/RRoberts4382/rNascar23.Sdk</RepositoryUrl>
-    <FileVersion>1.0.5.0</FileVersion>
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
-    <Version>1.0.5</Version>
+    <FileVersion>1.0.6.0</FileVersion>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <Version>1.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

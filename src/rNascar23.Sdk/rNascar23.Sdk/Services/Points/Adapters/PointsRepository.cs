@@ -51,7 +51,7 @@ namespace rNascar23.Sdk.Service.Points.Adapters
             try
             {
                 var url = _apiSourcesRepository.GetApiUrl(
-                    ApiSourceType.LoopData,
+                    ApiSourceType.Points,
                     (int)seriesId,
                     raceId);
 
@@ -95,7 +95,7 @@ namespace rNascar23.Sdk.Service.Points.Adapters
             try
             {
                 var url = _apiSourcesRepository.GetApiUrl(
-                    ApiSourceType.LoopData,
+                    ApiSourceType.Points,
                     (int)seriesId,
                     raceId);
 
