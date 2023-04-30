@@ -6,7 +6,6 @@
         Cup,
         Xfinity,
         Truck,
-        Arca = 999,
-        WhelenTourMod = 9999
+        Other = 999
     }
 }

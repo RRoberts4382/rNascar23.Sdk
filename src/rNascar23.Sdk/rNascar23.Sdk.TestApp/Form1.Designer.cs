@@ -30,6 +30,7 @@
         {
             this.button1 = new System.Windows.Forms.Button();
             this.btnAudio = new System.Windows.Forms.Button();
+            this.btnDrivers = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -40,7 +41,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "Api Sources";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.btnApiSources_Click);
             // 
             // btnAudio
             // 
@@ -52,11 +53,22 @@
             this.btnAudio.UseVisualStyleBackColor = true;
             this.btnAudio.Click += new System.EventHandler(this.btnAudio_Click);
             // 
+            // btnDrivers
+            // 
+            this.btnDrivers.Location = new System.Drawing.Point(175, 12);
+            this.btnDrivers.Name = "btnDrivers";
+            this.btnDrivers.Size = new System.Drawing.Size(75, 23);
+            this.btnDrivers.TabIndex = 2;
+            this.btnDrivers.Text = "Drivers";
+            this.btnDrivers.UseVisualStyleBackColor = true;
+            this.btnDrivers.Click += new System.EventHandler(this.btnDrivers_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(557, 205);
+            this.Controls.Add(this.btnDrivers);
             this.Controls.Add(this.btnAudio);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
@@ -69,6 +81,7 @@
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnAudio;
+        private System.Windows.Forms.Button btnDrivers;
     }
 }
 

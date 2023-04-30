@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.Points.Adapters
 {
-    internal class PointsRepository : JsonDataRepository, IPointsRepository
+    internal class PointsRepository : ResettableCircuitBreakerRepository, IPointsRepository
     {
         #region fields
 
@@ -50,30 +50,35 @@ namespace rNascar23.Sdk.Service.Points.Adapters
         {
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                     ApiSourceType.Points,
                     (int)seriesId,
                     raceId);
 
-                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var model = JsonConvert.DeserializeObject<DriverPointsModel[]>(json);
-
-                    if (model != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        var points = _mapper.Map<IList<DriverPoints>>(model);
+                        var model = JsonConvert.DeserializeObject<DriverPointsModel[]>(json);
 
-                        var enumerable = points as IEnumerable<DriverPoints>;
+                        if (model != null)
+                        {
+                            var points = _mapper.Map<IList<DriverPoints>>(model);
 
-                        if (skip.HasValue)
-                            enumerable = enumerable.Skip(skip.Value);
+                            var enumerable = points as IEnumerable<DriverPoints>;
 
-                        if (take.HasValue)
-                            enumerable = enumerable.Take(take.Value);
+                            if (skip.HasValue)
+                                enumerable = enumerable.Skip(skip.Value);
 
-                        return enumerable;
+                            if (take.HasValue)
+                                enumerable = enumerable.Take(take.Value);
+
+                            return enumerable;
+                        }
                     }
                 }
             }
@@ -94,30 +99,35 @@ namespace rNascar23.Sdk.Service.Points.Adapters
         {
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                     ApiSourceType.Points,
                     (int)seriesId,
                     raceId);
 
-                var json = await GetAsync(url).ConfigureAwait(false);
+                    var json = await GetAsync(url).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var models = JsonConvert.DeserializeObject<StagePointsDetailsModel[]>(json);
-
-                    if (models != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        var points = _mapper.Map<IList<StagePointsDetails>>(models);
+                        var models = JsonConvert.DeserializeObject<StagePointsDetailsModel[]>(json);
 
-                        var enumerable = points as IEnumerable<StagePointsDetails>;
+                        if (models != null)
+                        {
+                            var points = _mapper.Map<IList<StagePointsDetails>>(models);
 
-                        if (skip.HasValue)
-                            enumerable = enumerable.Skip(skip.Value);
+                            var enumerable = points as IEnumerable<StagePointsDetails>;
 
-                        if (take.HasValue)
-                            enumerable = enumerable.Take(take.Value);
+                            if (skip.HasValue)
+                                enumerable = enumerable.Skip(skip.Value);
 
-                        return enumerable;
+                            if (take.HasValue)
+                                enumerable = enumerable.Take(take.Value);
+
+                            return enumerable;
+                        }
                     }
                 }
             }

@@ -88,9 +88,12 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
 
                 if (driverData.Count == 0 || updateFromCompletedRaces)
                 {
-                    var drivers = await LoadDriversFromScheduleAsync(driverData.ToList(), cancellationToken).ConfigureAwait(false);
+                    driverData = await LoadDriversFromScheduleAsync(driverData.ToList(), cancellationToken).ConfigureAwait(false);
+                }
 
-                    var enumerable = drivers as IEnumerable<DriverInfo>;
+                if (driverData.Count > 0)
+                {
+                    var enumerable = driverData as IEnumerable<DriverInfo>;
 
                     if (skip.HasValue)
                         enumerable = enumerable.Skip(skip.Value);
@@ -276,7 +279,7 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
 
         private string BuildDataFilePath()
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"\\rNascar23\\Data\\{DataFileName}");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"rNascar23\\Data\\{DataFileName}");
         }
 
         #endregion

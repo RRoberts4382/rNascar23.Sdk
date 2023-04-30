@@ -1,4 +1,5 @@
-﻿using rNascar23.Sdk.Common;
+﻿using rNasar23Multi.Sdk.Data;
+using rNascar23.Sdk.Common;
 using rNascar23.Sdk.PitStops.Models;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.PitStops.Ports
 {
-    public interface IPitStopsRepository
+    public interface IPitStopsRepository : IJsonDataRepository
     {
         Task<IEnumerable<PitStop>> GetPitStopsAsync(
             SeriesTypes seriesId,

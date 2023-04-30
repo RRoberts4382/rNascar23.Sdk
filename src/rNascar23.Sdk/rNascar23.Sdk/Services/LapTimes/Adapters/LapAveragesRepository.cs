@@ -16,31 +16,12 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.LapTimes.Adapters
 {
-    internal class LapAveragesRepository : JsonDataRepository, ILapAveragesRepository
+    internal class LapAveragesRepository : ResettableCircuitBreakerRepository, ILapAveragesRepository
     {
-        #region consts
-
-        protected const int CircuitBreakerLimit = 2;
-
-        #endregion
-
         #region fields
 
         protected readonly IMapper _mapper;
         protected readonly IApiSourcesRepository _apiSourcesRepository;
-        private int _errorCount = 0;
-
-        #endregion
-
-        #region properties
-
-        protected virtual bool CircuitBreakerTripped
-        {
-            get
-            {
-                return _errorCount >= CircuitBreakerLimit;
-            }
-        }
 
         #endregion
 
@@ -72,6 +53,8 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
 
             try
             {
+                CheckForNewRaceId(raceId);
+
                 if (!CircuitBreakerTripped)
                 {
                     var url = _apiSourcesRepository.GetApiUrl(
@@ -118,29 +101,6 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
             }
 
             return new List<LapAverages>();
-        }
-
-        #endregion
-
-        #region protected
-
-        protected virtual void ExceptionHandler(Exception ex, string message, string json)
-        {
-            _logger.LogError(ex, $"{message}\r\n\r\njson: {json}\r\nError Count: {_errorCount}");
-
-            IncrementErrorCount();
-        }
-
-        #endregion
-
-        #region private
-
-        private void IncrementErrorCount()
-        {
-            _errorCount += 1;
-
-            if (CircuitBreakerTripped)
-                _logger.LogError("*** Circuit Breaker Tripped in LapAveragesRepository ***");
         }
 
         #endregion

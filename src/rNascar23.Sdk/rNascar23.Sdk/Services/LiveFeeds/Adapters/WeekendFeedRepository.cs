@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
 {
-    internal class WeekendFeedRepository : JsonDataRepository, IWeekendFeedRepository
+    internal class WeekendFeedRepository : ResettableCircuitBreakerRepository, IWeekendFeedRepository
     {
         #region fields
 
@@ -26,7 +26,7 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         #region ctor
 
         public WeekendFeedRepository(
-            IMapper mapper, 
+            IMapper mapper,
             ILogger<WeekendFeedRepository> logger,
             IApiSourcesRepository apiSourcesRepository)
             : base(logger)
@@ -40,26 +40,31 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         #region public
 
         public virtual async Task<WeekendFeed> GetWeekendFeedAsync(
-            SeriesTypes seriesId, 
-            int raceId, 
-            int? year = null, 
+            SeriesTypes seriesId,
+            int raceId,
+            int? year = null,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                    ApiSourceType.WeekendFeed,
                    (int)seriesId,
                    raceId,
                    year);
 
-                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var model = JsonConvert.DeserializeObject<WeekendFeedModel>(json);
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        var model = JsonConvert.DeserializeObject<WeekendFeedModel>(json);
 
-                    return _mapper.Map<WeekendFeed>(model);
+                        return _mapper.Map<WeekendFeed>(model);
+                    }
                 }
             }
             catch (Exception ex)

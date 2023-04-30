@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.LapTimes.Adapters
 {
-    internal class LapTimesRepository : JsonDataRepository, ILapTimesRepository
+    internal class LapTimesRepository : ResettableCircuitBreakerRepository, ILapTimesRepository
     {
         #region fields
 
@@ -50,24 +50,29 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
 
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                     ApiSourceType.LapTimes,
                     (int)seriesId,
                     raceId,
                     year);
 
-                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var model = JsonConvert.DeserializeObject<LapTimeDataModel>(json, new JsonSerializerSettings
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
+                        var model = JsonConvert.DeserializeObject<LapTimeDataModel>(json, new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
 
-                    if (model != null)
-                    {
-                        return _mapper.Map<LapTimeData>(model);
+                        if (model != null)
+                        {
+                            return _mapper.Map<LapTimeData>(model);
+                        }
                     }
                 }
             }
@@ -90,27 +95,32 @@ namespace rNascar23.Sdk.Service.LapTimes.Adapters
 
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                     ApiSourceType.LapTimes,
                     (int)seriesId,
                     raceId,
                     year);
 
-                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var model = JsonConvert.DeserializeObject<LapTimeDataModel>(json);
-
-                    if (model != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        var lapTimeData = _mapper.Map<LapTimeData>(model);
+                        var model = JsonConvert.DeserializeObject<LapTimeDataModel>(json);
 
-                        return new LapTimeData()
+                        if (model != null)
                         {
-                            LapFlags = lapTimeData.LapFlags,
-                            Drivers = lapTimeData.Drivers.Where(d => d.NASCARDriverID == driverId).ToList(),
-                        };
+                            var lapTimeData = _mapper.Map<LapTimeData>(model);
+
+                            return new LapTimeData()
+                            {
+                                LapFlags = lapTimeData.LapFlags,
+                                Drivers = lapTimeData.Drivers.Where(d => d.NASCARDriverID == driverId).ToList(),
+                            };
+                        }
                     }
                 }
             }

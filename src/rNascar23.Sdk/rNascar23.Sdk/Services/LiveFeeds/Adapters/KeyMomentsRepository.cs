@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
 {
-    internal class KeyMomentsRepository : JsonDataRepository, IKeyMomentsRepository
+    internal class KeyMomentsRepository : ResettableCircuitBreakerRepository, IKeyMomentsRepository
     {
         #region fields
 
@@ -48,45 +48,50 @@ namespace rNascar23.Sdk.Service.LiveFeeds.Adapters
         {
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                    ApiSourceType.KeyMoments,
                    (int)seriesId,
                    raceId,
                    year);
 
-                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var model = JsonConvert.DeserializeObject<KeyMomentModelList>(json);
-
-                    if (model != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        var keyMomentsList = new List<KeyMoment>();
+                        var model = JsonConvert.DeserializeObject<KeyMomentModelList>(json);
 
-                        foreach (KeyValuePair<int, KeyMomentModel[]> lapModel in model.Laps)
+                        if (model != null)
                         {
-                            for (int i = 0; i < lapModel.Value.Length; i++)
+                            var keyMomentsList = new List<KeyMoment>();
+
+                            foreach (KeyValuePair<int, KeyMomentModel[]> lapModel in model.Laps)
                             {
-                                keyMomentsList.Add(new KeyMoment()
+                                for (int i = 0; i < lapModel.Value.Length; i++)
                                 {
-                                    LapNumber = lapModel.Key,
-                                    Note = lapModel.Value[i].Note,
-                                    NoteId = lapModel.Value[i].NoteID,
-                                    FlagState = lapModel.Value[i].FlagState,
-                                });
+                                    keyMomentsList.Add(new KeyMoment()
+                                    {
+                                        LapNumber = lapModel.Key,
+                                        Note = lapModel.Value[i].Note,
+                                        NoteId = lapModel.Value[i].NoteID,
+                                        FlagState = lapModel.Value[i].FlagState,
+                                    });
+                                }
                             }
+
+                            var enumerable = keyMomentsList as IEnumerable<KeyMoment>;
+
+                            if (skip.HasValue)
+                                enumerable = enumerable.Skip(skip.Value);
+
+                            if (take.HasValue)
+                                enumerable = enumerable.Take(take.Value);
+
+                            return enumerable;
                         }
-
-                        var enumerable = keyMomentsList as IEnumerable<KeyMoment>;
-
-                        if (skip.HasValue)
-                            enumerable = enumerable.Skip(skip.Value);
-
-                        if (take.HasValue)
-                            enumerable = enumerable.Take(take.Value);
-
-                        return enumerable;
                     }
                 }
             }

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.LoopData.Adapters
 {
-    internal class LoopDataRepository : JsonDataRepository, ILoopDataRepository
+    internal class LoopDataRepository : ResettableCircuitBreakerRepository, ILoopDataRepository
     {
         #region fields
 
@@ -48,23 +48,28 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
         {
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                     ApiSourceType.LoopData,
                     (int)seriesId,
                     raceId,
                     year);
 
-                var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    var json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var model = JsonConvert.DeserializeObject<EventLoopDataModel[]>(json);
-
-                    if (model != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        var raceStats = model.FirstOrDefault();
+                        var model = JsonConvert.DeserializeObject<EventLoopDataModel[]>(json);
 
-                        return _mapper.Map<EventLoopData>(raceStats);
+                        if (model != null)
+                        {
+                            var raceStats = model.FirstOrDefault();
+
+                            return _mapper.Map<EventLoopData>(raceStats);
+                        }
                     }
                 }
             }

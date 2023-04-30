@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Service.PitStops.Adapters
 {
-    internal class PitStopsRepository : JsonDataRepository, IPitStopsRepository
+    internal class PitStopsRepository : ResettableCircuitBreakerRepository, IPitStopsRepository
     {
         #region fields
 
@@ -54,30 +54,35 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
 
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
                     ApiSourceType.PitStops,
                     (int)seriesId,
                     raceId);
 
-                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var models = JsonConvert.DeserializeObject<IList<PitStopModel>>(json);
-
-                    if (models != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        pitStops = _mapper.Map<IList<PitStop>>(models);
+                        var models = JsonConvert.DeserializeObject<IList<PitStopModel>>(json);
 
-                        var enumerable = pitStops as IEnumerable<PitStop>;
+                        if (models != null)
+                        {
+                            pitStops = _mapper.Map<IList<PitStop>>(models);
 
-                        if (skip.HasValue)
-                            enumerable = enumerable.Skip(skip.Value);
+                            var enumerable = pitStops as IEnumerable<PitStop>;
 
-                        if (take.HasValue)
-                            enumerable = enumerable.Take(take.Value);
+                            if (skip.HasValue)
+                                enumerable = enumerable.Skip(skip.Value);
 
-                        return enumerable;
+                            if (take.HasValue)
+                                enumerable = enumerable.Take(take.Value);
+
+                            return enumerable;
+                        }
                     }
                 }
             }
@@ -105,37 +110,42 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
 
             try
             {
-                var url = _apiSourcesRepository.GetApiUrl(
-                    ApiSourceType.LoopData,
+                CheckForNewRaceId(raceId);
+
+                if (!CircuitBreakerTripped)
+                {
+                    var url = _apiSourcesRepository.GetApiUrl(
+                    ApiSourceType.PitStops,
                     (int)seriesId,
                     raceId);
 
-                json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
+                    json = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var models = JsonConvert.DeserializeObject<IList<PitStopModel>>(json);
-
-                    if (models != null)
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        IEnumerable<PitStopModel> filteredModels = models;
+                        var models = JsonConvert.DeserializeObject<IList<PitStopModel>>(json);
 
-                        if (carNumber.HasValue)
-                            filteredModels = filteredModels.Where(p => p.vehicle_number == carNumber.Value.ToString());
+                        if (models != null)
+                        {
+                            IEnumerable<PitStopModel> filteredModels = models;
 
-                        if (startLap.HasValue)
-                            filteredModels = filteredModels.Where(p => p.lap_count >= startLap.Value);
+                            if (carNumber.HasValue)
+                                filteredModels = filteredModels.Where(p => p.vehicle_number == carNumber.Value.ToString());
 
-                        if (endLap.HasValue)
-                            filteredModels = filteredModels.Where(p => p.lap_count <= endLap.Value);
+                            if (startLap.HasValue)
+                                filteredModels = filteredModels.Where(p => p.lap_count >= startLap.Value);
 
-                        if (skip.HasValue)
-                            filteredModels = filteredModels.Skip(skip.Value);
+                            if (endLap.HasValue)
+                                filteredModels = filteredModels.Where(p => p.lap_count <= endLap.Value);
 
-                        if (take.HasValue)
-                            filteredModels = filteredModels.Take(take.Value);
+                            if (skip.HasValue)
+                                filteredModels = filteredModels.Skip(skip.Value);
 
-                        return _mapper.Map<IList<PitStop>>(filteredModels.ToList());
+                            if (take.HasValue)
+                                filteredModels = filteredModels.Take(take.Value);
+
+                            return _mapper.Map<IList<PitStop>>(filteredModels.ToList());
+                        }
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using rNascar23.Sdk.Common;
+﻿using rNasar23Multi.Sdk.Data;
+using rNascar23.Sdk.Common;
 using rNascar23.Sdk.Points.Models;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace rNascar23.Sdk.Points.Ports
 {
-    public interface IPointsRepository
+    public interface IPointsRepository : IJsonDataRepository
     {
         Task<IEnumerable<DriverPoints>> GetDriverPointsAsync(
             SeriesTypes seriesId, 
