@@ -28,5 +28,4 @@
         public string DriverVehicle { get; set; }
         public object DriverImage { get; set; }
     }
-
 }

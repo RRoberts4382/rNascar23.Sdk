@@ -10,10 +10,24 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/RRoberts4382/rNascar23.Sdk</RepositoryUrl>
-    <FileVersion>1.0.6.0</FileVersion>
-    <AssemblyVersion>1.0.6.0</AssemblyVersion>
-    <Version>1.0.6</Version>
+    <FileVersion>1.0.7.0</FileVersion>
+    <AssemblyVersion>1.0.7.0</AssemblyVersion>
+    <Version>1.0.7</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>rNascar-logo-128x128.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/RRoberts4382/rNascar23.Sdk</PackageProjectUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\..\rNascar-logo-128x128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />

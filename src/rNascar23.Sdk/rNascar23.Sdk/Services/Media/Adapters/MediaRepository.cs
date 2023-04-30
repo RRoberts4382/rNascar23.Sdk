@@ -3,13 +3,16 @@ using Newtonsoft.Json;
 using RestSharp;
 using rNascar23.Sdk.Common;
 using rNascar23.Sdk.Data;
-using rNascar23.Sdk.Media.Models;
 using rNascar23.Sdk.Media.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using rNascar23.Sdk.Media.Models;
+using AutoMapper;
+using rNascar23.Sdk.Services.Media.Data.Models;
+using rNascar23.Sdk.Service.Media.Models;
 
 namespace rNascar23.Sdk.Service.Media
 {
@@ -17,6 +20,7 @@ namespace rNascar23.Sdk.Service.Media
     {
         #region fields
 
+        protected readonly IMapper _mapper;
         protected readonly IList<MediaImage> _mediaCache = new List<MediaImage>();
 
         #endregion
@@ -34,9 +38,12 @@ namespace rNascar23.Sdk.Service.Media
 
         #region ctor
 
-        public MediaRepository(ILogger<MediaRepository> logger)
+        public MediaRepository(
+            ILogger<MediaRepository> logger,
+            IMapper mapper)
             : base(logger)
         {
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         #endregion
@@ -132,9 +139,14 @@ namespace rNascar23.Sdk.Service.Media
                 if (string.IsNullOrEmpty(json))
                     return new AudioConfiguration();
 
-                var model = JsonConvert.DeserializeObject<AudioConfiguration>(json);
+                var model = JsonConvert.DeserializeObject<AudioConfigurationModel>(json);
 
-                return model;
+                if (model != null)
+                {
+                    var configuration = _mapper.Map<AudioConfiguration>(model);
+
+                    return configuration;
+                }
             }
             catch (Exception ex)
             {
@@ -157,9 +169,14 @@ namespace rNascar23.Sdk.Service.Media
                 if (string.IsNullOrEmpty(json))
                     return new VideoConfiguration();
 
-                var model = JsonConvert.DeserializeObject<VideoConfiguration>(json);
+                var model = JsonConvert.DeserializeObject<VideoConfigurationModel>(json);
 
-                return model;
+                if (model != null)
+                {
+                    var configuration = _mapper.Map<VideoConfiguration>(model);
+
+                    return configuration;
+                }
             }
             catch (Exception ex)
             {
