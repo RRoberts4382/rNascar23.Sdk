@@ -152,7 +152,7 @@ namespace rNascar23.Sdk.Service.LoopData.Adapters
 
         protected virtual async Task<IList<DriverInfo>> LoadDriversFromScheduleAsync(List<DriverInfo> data, CancellationToken cancellationToken = default)
         {
-            var raceLists = await _scheduleRepository.GetRaceListAsync(null, cancellationToken).ConfigureAwait(false);
+            var raceLists = await _scheduleRepository.GetSchedulesAsync(null, cancellationToken).ConfigureAwait(false);
 
             foreach (var race in raceLists.TruckSeries.Where(t => t.DateScheduled.Date < DateTime.Now.Date))
             {

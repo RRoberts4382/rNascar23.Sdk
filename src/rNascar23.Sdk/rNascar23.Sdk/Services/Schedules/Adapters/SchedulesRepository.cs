@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
+using rNascar23.Sdk.Common;
 using rNascar23.Sdk.Data;
 using rNascar23.Sdk.Schedules.Models;
 using rNascar23.Sdk.Schedules.Ports;
 using rNascar23.Sdk.Service.Schedules.Data.Models;
+using rNascar23.Sdk.Services.Schedules.Logic;
 using rNascar23.Sdk.Sources.Models;
 using rNascar23.Sdk.Sources.Ports;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,7 +43,7 @@ namespace rNascar23.Sdk.Service.Schedules.Adapters
 
         #region public
 
-        public virtual async Task<SeriesSchedules> GetRaceListAsync(
+        public virtual async Task<SeriesSchedules> GetSchedulesAsync(
             int? year = null,
             CancellationToken cancellationToken = default)
         {
@@ -91,6 +95,102 @@ namespace rNascar23.Sdk.Service.Schedules.Adapters
             return new SeriesSchedules();
         }
 
+        public async Task<IList<SeriesEvent>> GetSchedulesAsync(
+            ScheduleType scheduleType,
+            int? year = null,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (scheduleType == ScheduleType.Historical)
+                    return new List<SeriesEvent>();
+
+                var schedules = await GetSchedulesAsync(year);
+
+                if (schedules != null)
+                {
+                    switch (scheduleType)
+                    {
+                        case ScheduleType.Trucks:
+                            {
+                                return schedules.TruckSeries;
+                            }
+                        case ScheduleType.Xfinity:
+                            {
+                                return schedules.XfinitySeries;
+                            }
+                        case ScheduleType.Cup:
+                            {
+                                return schedules.CupSeries;
+                            }
+                        case ScheduleType.All:
+                            {
+                                return schedules.CupSeries.Concat(schedules.XfinitySeries).Concat(schedules.TruckSeries).ToList();
+                            }
+                        case ScheduleType.ThisWeek:
+                            {
+                                var range = DayOfWeekHelper.GetScheduleRange(scheduleType);
+
+                                return schedules.CupSeries.
+                                    Concat(schedules.XfinitySeries).
+                                    Concat(schedules.TruckSeries).
+                                    Where(s => s.DateScheduled.Date >= range.Start.Date && s.DateScheduled.Date <= range.End.Date).
+                                    ToList();
+                            }
+                        case ScheduleType.NextWeek:
+                            {
+                                var range = DayOfWeekHelper.GetScheduleRange(scheduleType);
+
+                                return schedules.CupSeries.
+                                    Concat(schedules.XfinitySeries).
+                                    Concat(schedules.TruckSeries).
+                                    Where(s => s.DateScheduled.Date >= range.Start.Date && s.DateScheduled.Date <= range.End.Date).
+                                    ToList();
+                            }
+                        case ScheduleType.Today:
+                            {
+                                return schedules.CupSeries.
+                                   Concat(schedules.XfinitySeries).
+                                   Concat(schedules.TruckSeries).
+                                   Where(s => s.EventActivities.Any(x => x.StartTimeLocal.Date == DateTime.Now.Date)).
+                                   ToList();
+                            }
+                        default:
+                            {
+                                throw new ArgumentException($"Error selecting schedule to read: Unrecognized Series {scheduleType}", nameof(scheduleType));
+                            }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler(ex, "Exception reading schedules");
+            }
+
+            return new List<SeriesEvent>();
+        }
+
+        public async Task<SeriesEvent> GetEventAsync(
+            int raceId,
+            int? year = null,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var schedules = await GetSchedulesAsync(year);
+
+                if (schedules != null)
+                {
+                    return schedules.AllSeries.FirstOrDefault(s => s.RaceId == raceId);
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler(ex, "Exception reading schedules");
+            }
+
+            return null;
+        }
         #endregion
 
         #region classes

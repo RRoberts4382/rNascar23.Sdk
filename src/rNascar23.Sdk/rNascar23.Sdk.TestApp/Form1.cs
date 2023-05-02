@@ -1,5 +1,7 @@
-﻿using rNascar23.Sdk.LoopData.Ports;
+﻿using rNascar23.Sdk.Common;
+using rNascar23.Sdk.LoopData.Ports;
 using rNascar23.Sdk.Media.Ports;
+using rNascar23.Sdk.Schedules.Ports;
 using rNascar23.Sdk.Sources.Models;
 using rNascar23.Sdk.Sources.Ports;
 using System;
@@ -13,17 +15,20 @@ namespace rNascar23.Sdk.TestApp
         private readonly IApiSourcesRepository _apiSourcesRepository;
         private readonly IMediaRepository _mediaRepository;
         private readonly IDriverInfoRepository _driverInfoRepository;
+        private readonly ISchedulesRepository _schedulesRepository;
 
         public Form1(
             IApiSourcesRepository apiSourcesRepository,
             IMediaRepository mediaRepository,
-            IDriverInfoRepository driverInfoRepository)
+            IDriverInfoRepository driverInfoRepository,
+            ISchedulesRepository schedulesRepository)
         {
             InitializeComponent();
 
             _apiSourcesRepository = apiSourcesRepository ?? throw new ArgumentNullException(nameof(apiSourcesRepository));
             _mediaRepository = mediaRepository ?? throw new ArgumentNullException(nameof(mediaRepository));
             _driverInfoRepository = driverInfoRepository ?? throw new ArgumentNullException(nameof(driverInfoRepository));
+            _schedulesRepository = schedulesRepository ?? throw new ArgumentNullException(nameof(schedulesRepository));
         }
 
         private void btnApiSources_Click(object sender, EventArgs e)
@@ -88,6 +93,74 @@ namespace rNascar23.Sdk.TestApp
                 var drivers = await _driverInfoRepository.GetDriversAsync();
 
                 MessageBox.Show($"{drivers.Count()} drivers found");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnAll_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dataGridView1.DataSource = null;
+
+                var schedules = await _schedulesRepository.GetSchedulesAsync();
+
+                dataGridView1.DataSource = schedules.AllSeries.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnCup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dataGridView1.DataSource = null;
+
+                var schedules = await _schedulesRepository.GetSchedulesAsync(ScheduleType.Cup);
+
+                dataGridView1.DataSource = schedules.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnThisWeek_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dataGridView1.DataSource = null;
+
+                var schedules = await _schedulesRepository.GetSchedulesAsync(ScheduleType.ThisWeek);
+
+                dataGridView1.DataSource = schedules.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnToday_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dataGridView1.DataSource = null;
+
+                var schedules = await _schedulesRepository.GetSchedulesAsync(ScheduleType.Today);
+
+                dataGridView1.DataSource = schedules.ToList();
             }
             catch (Exception ex)
             {
