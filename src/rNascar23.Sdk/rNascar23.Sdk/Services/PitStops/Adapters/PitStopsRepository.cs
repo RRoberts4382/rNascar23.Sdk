@@ -99,7 +99,7 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
             int raceId,
             int? startLap,
             int? endLap = null,
-            int? carNumber = null,
+            string carNumber = null,
             int? skip = null,
             int? take = null,
             CancellationToken cancellationToken = default)
@@ -129,8 +129,8 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
                         {
                             IEnumerable<PitStopModel> filteredModels = models;
 
-                            if (carNumber.HasValue)
-                                filteredModels = filteredModels.Where(p => p.vehicle_number == carNumber.Value.ToString());
+                            if (!String.IsNullOrEmpty(carNumber))
+                                filteredModels = filteredModels.Where(p => p.vehicle_number == carNumber);
 
                             if (startLap.HasValue)
                                 filteredModels = filteredModels.Where(p => p.lap_count >= startLap.Value);

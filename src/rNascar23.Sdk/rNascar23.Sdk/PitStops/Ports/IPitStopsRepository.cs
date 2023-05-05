@@ -21,7 +21,7 @@ namespace rNascar23.Sdk.PitStops.Ports
             int raceId,
             int? startLap,
             int? endLap = null,
-            int? carNumber = null,
+            string carNumber = null,
             int? skip = null,
             int? take = null,
             CancellationToken cancellationToken = default);
