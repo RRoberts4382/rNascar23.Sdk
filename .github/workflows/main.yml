@@ -23,12 +23,12 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Cache NuGet
-          uses: actions/cache@v3
-          with:
-            path: ~/.nuget/packages
-            key: ${{ runner.os }}-nuget-main-${{ hashFiles('src/**/Directory.Packages.props', 'src/packages.config') }}
-            restore-keys: |
-              ${{ runner.os }}-nuget-main-
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-main-${{ hashFiles('src/**/Directory.Packages.props', 'src/packages.config') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-main-
 
     - name: Restore dependencies
       run: dotnet restore
