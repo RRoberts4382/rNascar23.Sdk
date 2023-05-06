@@ -25,3 +25,4 @@ jobs:
       working-directory: src/rNascar23.Sdk
     - name: Build
       run: dotnet build --no-restore
+      working-directory: src/rNascar23.Sdk
