@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Microsoft Packages -->    
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[7.0.0]" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="[7.0.0]" />
+    <!-- Other Packages -->
+    <!-- NOTE! If any of these have language files, you'll need to Include src/AdvantageSetup/AdvantageSetup/Files.wxs as well!!! -->
+    <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[8.1.1]" />
+    <PackageVersion Include="Newtonsoft.Json" Version="[13.0.3]" />
+    <PackageVersion Include="RestSharp" Version="[109.0.1]" />
+  </ItemGroup>
+</Project>
