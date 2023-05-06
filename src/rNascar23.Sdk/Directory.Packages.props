@@ -13,5 +13,6 @@
     <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[8.1.1]" />
     <PackageVersion Include="Newtonsoft.Json" Version="[13.0.3]" />
     <PackageVersion Include="RestSharp" Version="[109.0.1]" />
+    <PackageVersion Include="NuGet.Build.Tasks.Pack" Version="[6.5.0]" />
   </ItemGroup>
 </Project>
