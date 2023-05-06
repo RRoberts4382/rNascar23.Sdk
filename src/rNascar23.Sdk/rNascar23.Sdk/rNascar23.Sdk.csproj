@@ -37,15 +37,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="NuGet.Build.Tasks.Pack" >
+    <PackageReference Include="NuGet.Build.Tasks.Pack">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="RestSharp" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)&quot; &quot;$(TargetDir)..\..\..\..\..\..\bin\$(ConfigurationName)\&quot; /f /s /i /y" />
-  </Target>
 
 </Project>
