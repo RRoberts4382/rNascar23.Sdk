@@ -158,14 +158,5 @@ namespace rNascar23.Sdk.Service.PitStops.Adapters
         }
 
         #endregion
-
-        #region private
-
-        protected virtual void ExceptionHandler(Exception ex, string message, string json)
-        {
-            _logger.LogError(ex, $"{message}\r\n\r\njson: {json}");
-        }
-
-        #endregion
     }
 }
