@@ -10,13 +10,15 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/RRoberts4382/rNascar23.Sdk</RepositoryUrl>
-    <FileVersion>1.0.12.0</FileVersion>
-    <AssemblyVersion>1.0.12.0</AssemblyVersion>
-    <Version>1.0.12</Version>
+    <FileVersion>1.0.14.0</FileVersion>
+    <AssemblyVersion>1.0.14.0</AssemblyVersion>
+    <Version>1.0.14</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>rNascar-logo-128x128.png</PackageIcon>
     <PackageProjectUrl>https://github.com/RRoberts4382/rNascar23.Sdk</PackageProjectUrl>
+    <PackageDescription>Sdk for reading from NASCAR API</PackageDescription>
     <Authors>RRoberts4382</Authors>
+    <Company>RRoberts4382</Company>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +37,10 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.5.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="RestSharp" Version="109.0.1" />
   </ItemGroup>
 
