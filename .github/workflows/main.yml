@@ -36,9 +36,9 @@ jobs:
       
     - name: Build in restore mode
       run: dotnet build /t:Restore
-      working-directory: src/rNascar23.Sdk
+      working-directory: src/rNascar23.Sdk/rNascar23.Sdk
       shell: pwsh
 
     - name: Build
       run: dotnet build --no-restore
-      working-directory: src/rNascar23.Sdk
+      working-directory: src/rNascar23.Sdk/rNascar23.Sdk
