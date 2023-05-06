@@ -30,9 +30,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-main-
 
-    - name: Restore dependencies
-      run: dotnet restore
+    - name: Restore
       working-directory: src/rNascar23.Sdk
+      run: |-
+        dotnet nuget update source github --configfile ./nuget.config --username USERNAME --password ${{ secrets.GH_PACKAGES_TOKEN }} --store-password-in-clear-text
+        dotnet build /t:Restore
+      shell: pwsh
 
     - name: Build
       run: dotnet build --no-restore
