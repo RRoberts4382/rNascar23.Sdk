@@ -30,10 +30,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-main-
 
-    - name: Restore
-      run: |-
-        dotnet nuget update source github --configfile ./nuget.config --username USERNAME --password ${{ secrets.GH_PACKAGES_TOKEN }} --store-password-in-clear-text
-        dotnet build /t:Restore
+    - name: Restore packages
+      run: dotnet nuget update source github --configfile ./nuget.config --username USERNAME --password ${{ secrets.GH_PACKAGES_TOKEN }} --store-password-in-clear-text
+      shell: pwsh
+      
+    - name: Build in restore mode
+      run: dotnet build /t:Restore
       shell: pwsh
 
     - name: Build
