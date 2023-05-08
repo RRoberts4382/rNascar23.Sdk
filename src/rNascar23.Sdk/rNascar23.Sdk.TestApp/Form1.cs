@@ -1,4 +1,5 @@
 ﻿using rNascar23.Sdk.Common;
+using rNascar23.Sdk.LiveFeeds.Ports;
 using rNascar23.Sdk.LoopData.Ports;
 using rNascar23.Sdk.Media.Ports;
 using rNascar23.Sdk.Schedules.Ports;
@@ -16,12 +17,16 @@ namespace rNascar23.Sdk.TestApp
         private readonly IMediaRepository _mediaRepository;
         private readonly IDriverInfoRepository _driverInfoRepository;
         private readonly ISchedulesRepository _schedulesRepository;
+        private readonly ILiveFeedRepository _liveFeedRepository;
+        private readonly ILoopDataRepository _loopDataRepository;
 
         public Form1(
             IApiSourcesRepository apiSourcesRepository,
             IMediaRepository mediaRepository,
             IDriverInfoRepository driverInfoRepository,
-            ISchedulesRepository schedulesRepository)
+            ISchedulesRepository schedulesRepository,
+            ILiveFeedRepository liveFeedRepository,
+            ILoopDataRepository loopDataRepository)
         {
             InitializeComponent();
 
@@ -29,6 +34,8 @@ namespace rNascar23.Sdk.TestApp
             _mediaRepository = mediaRepository ?? throw new ArgumentNullException(nameof(mediaRepository));
             _driverInfoRepository = driverInfoRepository ?? throw new ArgumentNullException(nameof(driverInfoRepository));
             _schedulesRepository = schedulesRepository ?? throw new ArgumentNullException(nameof(schedulesRepository));
+            _liveFeedRepository = liveFeedRepository ?? throw new ArgumentNullException(nameof(liveFeedRepository));
+            _loopDataRepository = loopDataRepository ?? throw new ArgumentNullException(nameof(loopDataRepository));
         }
 
         private void btnApiSources_Click(object sender, EventArgs e)
@@ -93,6 +100,30 @@ namespace rNascar23.Sdk.TestApp
                 var drivers = await _driverInfoRepository.GetDriversAsync();
 
                 MessageBox.Show($"{drivers.Count()} drivers found");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnRatings_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var liveFeed = await _liveFeedRepository.GetLiveFeedAsync();
+
+                int take = 100;
+
+                var loopDataRatings = await _loopDataRepository.GetLoopDataRatingsAsync(liveFeed.SeriesId, liveFeed.RaceId, take);
+
+                foreach (var r in loopDataRatings)
+                {
+                    Console.WriteLine($"{r.Position} {r.Driver} {r.Rating}");
+                }
+
+                MessageBox.Show($"{loopDataRatings.Count()} driver ratings found");
             }
             catch (Exception ex)
             {

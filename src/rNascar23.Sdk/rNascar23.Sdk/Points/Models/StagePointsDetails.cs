@@ -29,5 +29,12 @@
         public int SeriesId { get; set; }
         public int RaceId { get; set; }
         public int RunId { get; set; }
+        public int TotalStagePoints
+        {
+            get
+            {
+                return Stage1Points + Stage2Points + Stage3Points;
+            }
+        }
     }
 }
