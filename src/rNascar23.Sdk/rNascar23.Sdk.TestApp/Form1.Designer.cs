@@ -34,9 +34,10 @@
             this.btnCup = new System.Windows.Forms.Button();
             this.btnAll = new System.Windows.Forms.Button();
             this.grpSchedules = new System.Windows.Forms.GroupBox();
-            this.btnThisWeek = new System.Windows.Forms.Button();
-            this.btnToday = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.btnToday = new System.Windows.Forms.Button();
+            this.btnThisWeek = new System.Windows.Forms.Button();
+            this.btnRatings = new System.Windows.Forms.Button();
             this.grpSchedules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -102,20 +103,21 @@
             this.grpSchedules.Controls.Add(this.btnAll);
             this.grpSchedules.Location = new System.Drawing.Point(13, 42);
             this.grpSchedules.Name = "grpSchedules";
-            this.grpSchedules.Size = new System.Drawing.Size(532, 200);
+            this.grpSchedules.Size = new System.Drawing.Size(1047, 200);
             this.grpSchedules.TabIndex = 5;
             this.grpSchedules.TabStop = false;
             this.grpSchedules.Text = "Schedules";
             // 
-            // btnThisWeek
+            // dataGridView1
             // 
-            this.btnThisWeek.Location = new System.Drawing.Point(168, 19);
-            this.btnThisWeek.Name = "btnThisWeek";
-            this.btnThisWeek.Size = new System.Drawing.Size(75, 23);
-            this.btnThisWeek.TabIndex = 5;
-            this.btnThisWeek.Text = "This Week";
-            this.btnThisWeek.UseVisualStyleBackColor = true;
-            this.btnThisWeek.Click += new System.EventHandler(this.btnThisWeek_Click);
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(7, 49);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(1034, 145);
+            this.dataGridView1.TabIndex = 7;
             // 
             // btnToday
             // 
@@ -127,22 +129,32 @@
             this.btnToday.UseVisualStyleBackColor = true;
             this.btnToday.Click += new System.EventHandler(this.btnToday_Click);
             // 
-            // dataGridView1
+            // btnThisWeek
             // 
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(7, 49);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(519, 145);
-            this.dataGridView1.TabIndex = 7;
+            this.btnThisWeek.Location = new System.Drawing.Point(168, 19);
+            this.btnThisWeek.Name = "btnThisWeek";
+            this.btnThisWeek.Size = new System.Drawing.Size(75, 23);
+            this.btnThisWeek.TabIndex = 5;
+            this.btnThisWeek.Text = "This Week";
+            this.btnThisWeek.UseVisualStyleBackColor = true;
+            this.btnThisWeek.Click += new System.EventHandler(this.btnThisWeek_Click);
+            // 
+            // btnRatings
+            // 
+            this.btnRatings.Location = new System.Drawing.Point(256, 12);
+            this.btnRatings.Name = "btnRatings";
+            this.btnRatings.Size = new System.Drawing.Size(75, 23);
+            this.btnRatings.TabIndex = 6;
+            this.btnRatings.Text = "Ratings";
+            this.btnRatings.UseVisualStyleBackColor = true;
+            this.btnRatings.Click += new System.EventHandler(this.btnRatings_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(557, 310);
+            this.ClientSize = new System.Drawing.Size(1072, 435);
+            this.Controls.Add(this.btnRatings);
             this.Controls.Add(this.grpSchedules);
             this.Controls.Add(this.btnDrivers);
             this.Controls.Add(this.btnAudio);
@@ -166,6 +178,7 @@
         private System.Windows.Forms.Button btnToday;
         private System.Windows.Forms.Button btnThisWeek;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button btnRatings;
     }
 }
 
