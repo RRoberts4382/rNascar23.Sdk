@@ -63,6 +63,11 @@ namespace rNascar23.Sdk.Data
 
             try
             {
+                if (string.IsNullOrEmpty(url))
+                {
+                    throw new ArgumentNullException(nameof(url));
+                }
+
                 if (!CircuitBreakerTripped)
                 {
                     var client = new RestClient(url);
@@ -72,6 +77,13 @@ namespace rNascar23.Sdk.Data
                     request.AddHeader("User-Agent", UserAgentTag);
 
                     var result = client.Execute(request);
+
+                    if (result == null || result.Content == null)
+                    {
+                        _logger.LogWarning($"Api returned null for this url: {url}");
+
+                        return string.Empty;
+                    }
 
                     json = result.Content;
 
@@ -99,6 +111,11 @@ namespace rNascar23.Sdk.Data
 
             try
             {
+                if (string.IsNullOrEmpty(url))
+                {
+                    throw new ArgumentNullException(nameof(url));
+                }
+
                 if (!CircuitBreakerTripped)
                 {
                     var client = new RestClient(url);
@@ -108,6 +125,13 @@ namespace rNascar23.Sdk.Data
                     request.AddHeader("User-Agent", UserAgentTag);
 
                     var result = await client.ExecuteGetAsync(request, cancellationToken);
+
+                    if (result == null || result.Content == null)
+                    {
+                        _logger.LogWarning($"Api returned null for this url: {url}");
+
+                        return string.Empty;
+                    }
 
                     json = result.Content;
 
