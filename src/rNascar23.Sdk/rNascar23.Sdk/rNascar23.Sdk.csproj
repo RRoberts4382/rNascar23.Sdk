@@ -10,9 +10,9 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/RRoberts4382/rNascar23.Sdk</RepositoryUrl>
-    <FileVersion>1.0.18.0</FileVersion>
-    <AssemblyVersion>1.0.18.0</AssemblyVersion>
-    <Version>1.0.18</Version>
+    <FileVersion>1.0.19.0</FileVersion>
+    <AssemblyVersion>1.0.19.0</AssemblyVersion>
+    <Version>1.0.19</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>rNascar-logo-128x128.png</PackageIcon>
     <PackageProjectUrl>https://github.com/RRoberts4382/rNascar23.Sdk</PackageProjectUrl>
