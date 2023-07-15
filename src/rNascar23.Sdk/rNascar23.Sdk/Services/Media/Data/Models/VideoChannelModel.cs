@@ -3,7 +3,7 @@
     public class VideoChannelModel
     {
         public int id { get; set; }
-        public int driverID { get; set; }
+        public int? driverID { get; set; }
         public int? postID { get; set; }
         public string title { get; set; }
         public bool driverOverlay { get; set; }

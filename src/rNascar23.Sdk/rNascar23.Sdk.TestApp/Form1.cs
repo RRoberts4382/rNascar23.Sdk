@@ -75,7 +75,7 @@ namespace rNascar23.Sdk.TestApp
 
                 MessageBox.Show($"{audioConfiguration.AudioChannels.Count()} audio channels found");
 
-                var videoConfiguration = await _mediaRepository.GetVideoConfigurationAsync(Common.SeriesTypes.Xfinity);
+                var videoConfiguration = await _mediaRepository.GetVideoConfigurationAsync(Common.SeriesTypes.Cup);
 
                 if (videoConfiguration.VideoComponents.Count > 0)
                 {
